@@ -12,8 +12,8 @@ export async function POST(request) {
     // Execute the command
     const result = await browserManager.executeCommand(
       sessionId,
-      parsedCommand.command,
-      parsedCommand.action
+      parsedCommand,
+      null
     );
 
     return NextResponse.json({
