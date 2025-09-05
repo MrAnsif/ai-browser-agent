@@ -8,7 +8,6 @@ export async function POST(request) {
 
     // Parse the user command using AI
     const parsedCommand = await parseCommand(userInput);
-    console.log('parsedCommand in api>execute-command: ', parsedCommand)
 
     // Execute the command
     const result = await browserManager.executeCommand(
@@ -21,6 +20,7 @@ export async function POST(request) {
       result,
       parsedCommand,
       userInput,
+      liveViewUrl: result.liveViewUrl,
     });
   } catch (error) {
     console.error('Command execution error:', error);

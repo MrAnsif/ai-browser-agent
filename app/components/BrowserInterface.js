@@ -8,6 +8,7 @@ export default function BrowserInterface() {
   const [session, setSession] = useState({
     sessionId: null,
     screenshot: null,
+    liveViewUrl: null, // Added: Live View URL
     isExecuting: false,
     history: [],
   });
@@ -21,6 +22,7 @@ export default function BrowserInterface() {
       setSession(prev => ({
         ...prev,
         sessionId: data.sessionId,
+        liveViewUrl: data.liveViewUrl, // Set Live View URL
       }));
     } catch (error) {
       console.error('Failed to create session:', error);
@@ -43,11 +45,12 @@ export default function BrowserInterface() {
       });
 
       const data = await response.json();
-      console.log('data response from execute-command in frontend: ', data)
+      console.log('data response from execute-command in frontend: ', data);
       
       setSession(prev => ({
         ...prev,
         screenshot: data.result.screenshot || prev.screenshot,
+        liveViewUrl: data.liveViewUrl || prev.liveViewUrl, // Update Live View URL if changed
         history: [...prev.history, {
           command,
           result: data.result,
@@ -73,6 +76,7 @@ export default function BrowserInterface() {
     setSession({
       sessionId: null,
       screenshot: null,
+      liveViewUrl: null, // Reset Live View URL
       isExecuting: false,
       history: [],
     });
@@ -103,17 +107,26 @@ export default function BrowserInterface() {
           </div>
         </div>
         
-        {/* Screenshot Display */}
-        <div className="flex-1 bg-white overflow-hidden">
-          {session.screenshot ? (
+        {/* Live View Display */}
+        <div className="flex-1 bg-black overflow-hidden">
+          {session.liveViewUrl ? (
+            <iframe
+              src={session.liveViewUrl}
+              sandbox="allow-same-origin allow-scripts"
+              allow="clipboard-read; clipboard-write"
+              className="w-full h-full border-none"
+              title="Live Browser Stream"
+            />
+          ) : session.screenshot ? (
+            // Fallback to screenshot if Live View is not available
             <img
               src={`data:image/png;base64,${session.screenshot}`}
               alt="Browser Screenshot"
               className="w-full h-full object-contain"
             />
           ) : (
-            <div className="flex items-center justify-center h-full text-gray-500">
-              {session.sessionId ? 'Waiting for first command...' : 'Start a session to begin'}
+            <div className="flex items-center justify-center h-full text-gray-500 bg-gray-800">
+              {session.sessionId ? 'Live stream starting...' : 'Start a session to begin'}
             </div>
           )}
         </div>

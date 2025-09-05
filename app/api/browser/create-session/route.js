@@ -9,6 +9,7 @@ export async function POST(request) {
     
     return NextResponse.json({
       sessionId: session.id,
+      liveViewUrl: session.liveViewUrl, // Added: Return Live View URL
       message: 'Browser session created successfully',
     });
   } catch (error) {
